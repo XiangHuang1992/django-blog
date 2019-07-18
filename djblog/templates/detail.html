@@ -15,7 +15,8 @@
         </div>
     </header>
     <div class="entry-content clearfix">
-        {{ post.body }}
+        <!-- django出于安全考虑，任何的HTML代码在django的模版中都会被转义，即显示原始的html代码，而不是经浏览器渲染后的格式。加上safe过滤器即可解决 -->
+        {{ post.body|safe }}
     </div>
 </article>
 <section class="comment-area" id="comment-area">
