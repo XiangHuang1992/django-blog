@@ -46,11 +46,18 @@ class Post(models.Model):
     # 一篇文章只有一个作者，一个作者有多篇文章。是一对多的关系。
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    # PositiveIntegerField 该字段最小值为0
+    views = models.PositiveIntegerField(default=0)
+
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
         return reverse("djblog:detail", kwargs={"pk": self.pk})
+
+    def increase_views(self):
+        self.views += 1
+        self.save(update_fields=["views"])
 
     class Meta:
         ordering = ["-create_time"]
