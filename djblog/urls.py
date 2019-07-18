@@ -6,5 +6,5 @@ app_name = "djblog"
 
 urlpatterns = [
     path("", views.index, name="首页"),
-    path("post/<int:pk>", views.detail, name="detail"),
+    path("posts/<int:pk>/", views.detail, name="detail"),
 ]
