@@ -4,6 +4,8 @@ from django.shortcuts import get_object_or_404, render
 
 from .models import Post, CateGory
 
+from comments.forms import CommentForm
+
 # Create your views here.
 
 
@@ -23,7 +25,11 @@ def detail(request, pk):
             "markdown.extensions.toc",
         ],
     )
-    return render(request, "detail.html", context={"post": post})
+    form = CommentForm()
+    comment_list = post.comment_set.all()
+
+    context = {"post": post, "form": form, "comment_list": comment_list}
+    return render(request, "detail.html", context=context)
 
 
 def archives(request, year, month):

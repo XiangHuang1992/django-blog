@@ -26,7 +26,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 注册 djblog
-    "djblog.apps.DjblogConfig"
+    "djblog.apps.DjblogConfig",
+    # 注册 comments
+    "comments.apps.CommentsConfig",
 ]
 
 MIDDLEWARE = [
