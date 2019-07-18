@@ -1,7 +1,8 @@
-from django.db import models
-
+import markdown
 from django.contrib.auth.models import User
+from django.db import models
 from django.urls import reverse
+from django.utils.html import strip_tags
 
 # Create your models here.
 
@@ -58,6 +59,22 @@ class Post(models.Model):
     def increase_views(self):
         self.views += 1
         self.save(update_fields=["views"])
+
+    """生成文章摘要
+    先将body中的Markdown文本转为HTML文本，去掉HTML文本中的HTML标签，然后摘取文章的前54个字符作为文章摘要。
+
+    除此之外还可以采取第二种方法。使用Django中的过滤器。eg: {{ post.body|truncatechars:54 }}
+    """
+
+    def save(self, *args, **kwargs):
+        if not self.excerpt:
+            md = markdown.Markdown(
+                extensions=["markdown.extensions.extra", "markdown.extensions.codehilite"]
+            )
+
+            self.excerpt = strip_tags(md.convert(self.body))[:54]
+
+        super(Post, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ["-create_time"]
