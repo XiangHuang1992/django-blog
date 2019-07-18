@@ -2,7 +2,7 @@ import markdown
 
 from django.shortcuts import get_object_or_404, render
 
-from .models import Post
+from .models import Post, CateGory
 
 # Create your views here.
 
@@ -24,3 +24,18 @@ def detail(request, pk):
         ],
     )
     return render(request, "detail.html", context={"post": post})
+
+
+def archives(request, year, month):
+    post_list = Post.objects.filter(
+        create_time__year=year, create_time__month=month
+    ).order_by("-create_time")
+
+    return render(request, "index.html", context={"post_list": post_list})
+
+
+def category(request, pk):
+    cate = get_object_or_404(CateGory, pk=pk)
+    post_list = Post.objects.filter(category=cate).order_by("-create_time")
+
+    return render(request, "index.html", context={"post_list": post_list})
