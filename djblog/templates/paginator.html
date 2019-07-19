@@ -1,0 +1,31 @@
+<div class="btn-group" role="group">
+    {% if has_previous %}
+    <a class="btn btn-dark" href="{{ request.path }}?page={{ previous }}"><i class="fa fa-angle-left"></i></a>
+    {% else %}
+    <button type="button" class="btn btn-dark" disabled="disabled"><i class="fa fa-angle-left"></i></button>
+    {% endif %}
+
+    {% if show_first %}
+    <a class="btn btn-light" href="{{ request.path }}?page=1">1</a>
+    <button type="button" class="btn btn-light" disabled="disabled">...</button>
+    {% endif %}
+
+    {% for linkpage in page_numbers %}
+    {% ifequal linkpage page %}
+    <button type="button" class="btn btn-light active">{{ page }}</button>
+    {% else %}
+    <a class="btn btn-light" href="{{ request.path }}?page={{ linkpage }}">{{ linkpage }}</a>
+    {% endifequal %}
+    {% endfor %}
+
+    {% if show_last %}
+    <button type="button" class="btn btn-light" disabled="disabled">...</button>
+    <a class="btn btn-light" href="{{ request.path }}?page=last">{{ pages }}</a>
+    {% endif %}
+
+    {% if has_next %}
+    <a class="btn btn-dark" href="{{ request.path }}?page={{ next }}"><i class="fa fa-angle-right"></i></a>
+    {% else %}
+    <button type="button" class="btn btn-dark" disabled="disabled"><i class="fa fa-angle-right"></i></button>
+    {% endif %}
+</div>

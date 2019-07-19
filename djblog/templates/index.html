@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load blog_tags %}
 
 {% block main %}
 {% for post in post_list %}
@@ -11,7 +11,7 @@
         <div class="entry-meta">
             <span class="post-category"><a href="#">{{ post.category.name }}</a></span>
             <span class="post-date"><a href="#"><time class="entry-date"
-                        datetime="{{ post.created_time }}">{{ post.created_time }}</time></a></span>
+                        datetime="{{ post.create_time }}">{{ post.create_time }}</time></a></span>
             <span class="post-author"><a href="#">{{ post.author }}</a></span>
             <span class="comments-link"><a href="#">4 评论</a></span>
             <span class="views-count"><a href="{{ post.get_absolute_url }}">{{ post.views}} 阅读</a></span>
@@ -37,16 +37,32 @@
 -->
 
 {% if is_paginated %}
+<!-- 
+<ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一页</a></li>
+    {% else %}
+    <li class="page-item disabled"><span>&laquo;</span></li>
+    {% endif %}
+ 
+    {% for i in paginator.page_range %}
 
-{% if page_obj.has_previous %}
-<a href="?page={{ page_obj.previous_page_number }}">上一页</a>
-{% endif %}
-<span class="current">第 {{ page_obj.number }}页 / 共 {{ paginator_num_pages }}页</span>
+    {% if page_obj.number == i %}
+    <li class='page-item active'><span>{{ i }} <span class="sr-only">(current)</span> </span></li>
+    {% else %}
+    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+    {% endif %}
 
+    {% endfor %}
 
-{% if page_obj.has_next %}
-<a href="?page={{ page_obj.next_page_number }}">下一页</a>
-{% endif %}
+    {% if page_obj.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">下一页</a></li>
+    {% else %}
+    {% endif %}
+</ul> -->
+<ul class="pagination">
+    {% render_paginator 3 %}
+</ul>
 
 
 {% endif %}
