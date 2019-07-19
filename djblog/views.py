@@ -2,11 +2,14 @@ import markdown
 
 from django.shortcuts import get_object_or_404
 
-from .models import Post, CateGory
+from .models import Post, CateGory, Tag
 
 from comments.forms import CommentForm
 
 from django.views.generic import ListView, DetailView
+
+from django.utils.text import slugify
+from markdown.extensions.toc import TocExtension
 
 # Create your views here.
 
@@ -16,87 +19,6 @@ class IndexView(ListView):
     template_name = "index.html"  # 指定这个视图渲染的模版
     context_object_name = "post_list"  # 指定获取的模型列表数据保存的变量名，这个变量会传递到模版
     paginate_by = 1
-
-    # def pagination_data(self, paginator, page, is_paginated):
-    #     if not is_paginated:
-    #         return {}
-
-    #     left = []
-    #     right = []
-
-    #     left_has_more = False
-    #     right_has_more = False
-
-    #     first = False
-    #     last = False
-    #     page_number = page.number
-
-    #     total_pages = paginator.num_pages
-    #     page_range = paginator.page_range
-
-    #     if page_number == 1:
-    #         right = page_range[page_number:page_number + 2]
-
-    #         if right[-1] < total_pages - 1:
-    #             right_has_more = True
-
-    #         if right[-1] < total_pages:
-    #             last = True
-
-    #     elif page_number == total_pages:
-    #         left = page_range[
-    #             (page_number - 3) if (page_number - 3) > 0 else 0:page_number - 1
-    #         ]
-
-    #         if left[0] > 2:
-    #             left_has_more = True
-
-    #         if left[0] > 1:
-    #             first = True
-
-    #     else:
-    #         left = page_range[
-    #             (page_number - 3) if (page_number - 3) > 0 else 0:page_number - 1
-    #         ]
-    #         right = page_range[page_number:page_number + 2]
-
-    #         if right[-1] < total_pages - 1:
-    #             right_has_more = True
-    #         if right[-1] < total_pages:
-    #             last = True
-
-    #         if left[0] > 2:
-    #             left_has_more = True
-    #         if left[0] > 1:
-    #             first = True
-
-    #     data = {
-    #         "left": left,
-    #         "right": right,
-    #         "left_has_more": left_has_more,
-    #         "right_has_more": right_has_more,
-    #         "first": first,
-    #         "last": last,
-    #     }
-
-    #     return data
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-
-    #     paginator = context.get("paginator")
-
-    #     pagination_data = self.pagination_data(paginator, page, is_paginated)
-
-    #     context.update(pagination_data)
-
-    #     return context
-
-
-# def index(request):
-
-#     post_list = Post.objects.all()  # 从数据库获取全部文章，按照时间最晚的排最前面
-#     return render(request, "index.html", context={"post_list": post_list})
 
 
 class PostDetailView(DetailView):
@@ -115,14 +37,17 @@ class PostDetailView(DetailView):
     # 根据id获取文章，对文章的post_body进行markdown渲染
     def get_object(self, queryset=None):
         post = super(PostDetailView, self).get_object(queryset=None)
-        post.body = markdown.markdown(
-            post.body,
+
+        md = markdown.Markdown(
             extensions=[
                 "markdown.extensions.extra",
                 "markdown.extensions.codehilite",
-                "markdown.extensions.toc",
-            ],
+                TocExtension(slugify=slugify),
+            ]
         )
+
+        post.body = md.convert(post.body)
+        post.toc = md.toc
         return post
 
     # 获取post下的评论
@@ -192,3 +117,13 @@ class CategoryView(ListView):
 #     post_list = Post.objects.filter(category=cate)
 
 #     return render(request, "index.html", context={"post_list": post_list})
+
+
+class TagView(ListView):
+    model = Post
+    template_name = "index.html"
+    context_object_name = "post_list"
+
+    def get_queryset(self):
+        tag = get_object_or_404(Tag, pk=self.kwargs.get("pk"))
+        return super(TagView, self).get_queryset().filter(tags=tag)

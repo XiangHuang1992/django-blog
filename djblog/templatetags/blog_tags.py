@@ -1,6 +1,7 @@
 from django import template
-from ..models import Post, CateGory
+from ..models import Post, CateGory, Tag
 from django.core.paginator import EmptyPage
+from django.db.models.aggregates import Count
 
 register = template.Library()
 
@@ -17,7 +18,12 @@ def archives():
 
 @register.simple_tag
 def get_categories():
-    return CateGory.objects.all()
+    return CateGory.objects.annotate(num_posts=Count("post")).filter(num_posts__gt=0)
+
+
+@register.simple_tag
+def get_tags():
+    return Tag.objects.annotate(num_posts=Count("post")).filter(num_posts__gt=0)
 
 
 @register.inclusion_tag("paginator.html", takes_context=True)
