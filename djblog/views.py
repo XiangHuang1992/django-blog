@@ -15,6 +15,7 @@ class IndexView(ListView):
     model = Post  # 告诉Django获取的模型
     template_name = "index.html"  # 指定这个视图渲染的模版
     context_object_name = "post_list"  # 指定获取的模型列表数据保存的变量名，这个变量会传递到模版
+    paginate_by = 10
 
 
 # def index(request):
